@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- Czcionka Special Elite -->
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .tytul {
+      font-family: "Special Elite", monospace;
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+
+    .player {
+      width: 260px;
+      height: 42px;
+      background: #000;
+      border-radius: 22px;
+      padding: 6px 14px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+
+    .play {
+      width: 28px;
+      height: 28px;
+      background: #F6B511;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .play span {
+      font-size: 15px;
+      color: black;
+      pointer-events: none;
+      position: relative;
+      top: 1px;
+    }
+
+    .bar {
+      flex: 1;
+      height: 6px;
+      background: #444;
+      border-radius: 4px;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .played {
+      height: 6px;
+      background: #F6B511;
+      width: 0%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 4px;
+    }
+
+    .time {
+      font-family: "Special Elite", monospace;
+      font-size: 12px;
+      color: #F6B511;
+      width: 40px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="tytul">LINA</div>
+
+  <div class="player" data-src="https://xpanol.github.io/Lina/LINA_XPANOL.mp3">
+    <div class="play"><span>▶</span></div>
+    <div class="bar"><div class="played"></div></div>
+    <div class="time">0:00</div>
+  </div>
+
+  <script>
+    function formatTime(sec) {
+      if (!sec) return "0:00";
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60).toString().padStart(2, "0");
+      return m + ":" + s;
+    }
+
+    document.querySelectorAll(".player").forEach(player => {
+      const audio = new Audio(player.dataset.src);
+      const btn = player.querySelector(".play");
+      const bar = player.querySelector(".bar");
+      const played = player.querySelector(".played");
+      const time = player.querySelector(".time");
+
+      let playing = false;
+
+      function updateClock() {
+        if (!audio.paused) {
+          const percent = (audio.currentTime / audio.duration) * 100;
+          played.style.width = percent + "%";
+          time.textContent = formatTime(audio.currentTime);
+          requestAnimationFrame(updateClock);
+        }
+      }
+
+      btn.addEventListener("click", () => {
+        if (!playing) {
+          audio.play();
+          playing = true;
+          btn.innerHTML = "<span>❚❚</span>";
+          requestAnimationFrame(updateClock);
+        } else {
+          audio.pause();
+          playing = false;
+          btn.innerHTML = "<span>▶</span>";
+        }
+      });
+
+      bar.addEventListener("click", e => {
+        const rect = bar.getBoundingClientRect();
+        const offset = e.clientX - rect.left;
+        const percent = offset / rect.width;
+        audio.currentTime = percent * audio.duration;
+        played.style.width = percent * 100 + "%";
+        time.textContent = formatTime(audio.currentTime);
+      });
+
+      audio.addEventListener("ended", () => {
+        playing = false;
+        btn.innerHTML = "<span>▶</span>";
+        played.style.width = "0%";
+        time.textContent = "0:00";
+      });
+    });
+  </script>
+
+</body>
+</html>
