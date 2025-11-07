@@ -81,6 +81,11 @@
       text-align: right;
       flex-shrink: 0;
     }
+
+    /* Ukryty element audio */
+    audio {
+      display: none;
+    }
   </style>
 </head>
 
@@ -88,7 +93,9 @@
 
   <div class="tytul">LINA</div>
 
-  <div class="player" data-src="https://xpanol.github.io/Lina/LINA_XPANOL.mp3">
+  <div class="player">
+    <audio src="https://xpanol.github.io/Lina/LINA_XPANOL.mp3"></audio>
+
     <div class="play"><span>▶</span></div>
     <div class="bar"><div class="played"></div></div>
     <div class="time">0:00</div>
@@ -103,7 +110,7 @@
     }
 
     document.querySelectorAll(".player").forEach(player => {
-      const audio = new Audio(player.dataset.src);
+      const audio = player.querySelector("audio");
       const btn = player.querySelector(".play");
       const bar = player.querySelector(".bar");
       const played = player.querySelector(".played");
@@ -153,4 +160,3 @@
 
 </body>
 </html>
-
